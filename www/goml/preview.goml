@@ -1,0 +1,13 @@
+<goml>
+  <import-material typeName="img" src="./sort/img.sort"/>
+  <import-material typeName="map" src="./sort/map.sort"/>
+  <renderer>
+    <texture-buffer name="bb1"/>
+    <render-quad id="r" material="new(map)" source="backbuffer(bb1)" l1="1,0,0"/>
+    <render-quad material="new(img)">
+      <render-quad.components>
+        <Webcam target="source"/>
+      </render-quad.components>
+    </render-quad>
+  </renderer>
+</goml>

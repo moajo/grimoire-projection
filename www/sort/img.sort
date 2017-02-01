@@ -1,0 +1,26 @@
+@Pass{
+@Disable(BLEND)
+@Disable(DEPTH_TEST)
+FS_PREC(mediump,float)
+varying vec2 vTexCoord;
+
+#ifdef VS
+attribute vec3 position;
+attribute vec2 texCoord;
+
+void main(){
+  gl_Position = vec4(position,1);
+  vTexCoord = vec2(texCoord.x,1.-texCoord.y);
+}
+
+#endif
+
+#ifdef FS
+
+  uniform sampler2D source;
+
+  void main(){
+    gl_FragColor = texture2D(source,vTexCoord);
+  }
+#endif
+}

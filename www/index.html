@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="./lib/rx.all.js" charset="utf-8"></script>
+    <script src="./lib/grimoire.js.link" charset="utf-8"></script>
+    <script src="./lib/grimoire-math.js.link" charset="utf-8"></script>
+    <script src="./lib/grimoire-fundamental.js.link" charset="utf-8"></script>
+    <script src="./scripts/Mouse.js" charset="utf-8"></script>
+    <script src="./scripts/webcam.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="./index.css" media="all">
+    <title></title>
+  </head>
+
+  <body>
+    <div id="wrapper" class="wrapper">
+      <video id="myVideo" class="content"  autoplay="1" ></video>
+      <script id="maingoml" class="content" type="text/goml" src="./index.goml" charset="utf-8"></script>
+    </div>
+    <button type="button" name="button" onclick="fullScreen()">f</button>
+    <button type="button" name="button" onclick="exitFullScreen()">e</button>
+    <button type="button" name="button" onclick="updateMat()">update</button>
+    <script src="./index.js" charset="utf-8"></script>
+    <!-- <script id="preview" type="text/goml" src="./goml/preview.goml" charset="utf-8"></script> -->
+  </body>
+
+</html>
