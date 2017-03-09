@@ -51,37 +51,40 @@ gr.registerComponent("TimeAttackGameManager", {
     //カウントダウン
     SE.countDown.rate(1.5, SE.countDown.play());
 
+    setTimeout(() => {
+      this.startTime = Date.now();
+      const targetCount = this.targets.length;
 
-    this.startTime = Date.now();
-    const targetCount = this.targets.length;
+      let count = 0;
+      const _this = this;
 
-    let count = 0;
-    const _this = this;
-
-    const updateTime = function () {
-      _this.node.emit("timeupdate", _this.currnetTime());
-    }
-    const updateID = setInterval(updateTime, 30);
-    this.targets[0].on("touch", function () {
-      console.log(`target ${count} touched`);
-      _this.targets[count].enabled = false;
-      _this.targets[count].removeListener("touch", arguments.callee);
-      count++;
-      if (count < targetCount) {
-        _this.targets[count].on("touch", arguments.callee);
-        console.log(`time: ${_this.currnetTime()}`)
-        console.log(`next is ${count}`);
-      } else {
-        let clearTime = _this.currnetTime();
-        _this.recordTime = Math.min(_this.recordTime, clearTime);
-        clearInterval(updateID);
-        console.log("game finish");
-        console.log(`time: ${clearTime}`);
-
-        _this.node.emit("finish", clearTime);
-
+      const updateTime = function () {
+        _this.node.emit("timeupdate", _this.currnetTime());
       }
-    });
+      const updateID = setInterval(updateTime, 30);
+      this.targets[0].on("touch", function () {
+        console.log(`target ${count} touched`);
+        _this.targets[count].enabled = false;
+        _this.targets[count].removeListener("touch", arguments.callee);
+        count++;
+        if (count < targetCount) {
+          SE.touch.play();
+          _this.targets[count].on("touch", arguments.callee);
+          console.log(`time: ${_this.currnetTime()}`)
+          console.log(`next is ${count}`);
+        } else {
+          SE.goal.play();
+          let clearTime = _this.currnetTime();
+          _this.recordTime = Math.min(_this.recordTime, clearTime);
+          clearInterval(updateID);
+          console.log("game finish");
+          console.log(`time: ${clearTime}`);
+
+          _this.node.emit("finish", clearTime);
+
+        }
+      });
+    }, 2000);
   },
 
   currnetTime: function () { //プレイタイム

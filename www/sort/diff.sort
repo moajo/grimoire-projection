@@ -1,0 +1,30 @@
+@Pass{
+@Disable(BLEND)
+@Disable(DEPTH_TEST)
+FS_PREC(mediump,float)
+varying vec2 vTexCoord;
+
+#ifdef VS
+
+@DIFF_1
+uniform sampler2D projection;
+
+attribute vec3 position;
+attribute vec2 texCoord;
+
+void main(){
+  vTexCoord = texCoord;
+  gl_Position = vec4(position,1.);
+}
+
+#endif
+
+#ifdef FS
+
+  uniform sampler2D source;
+
+  void main(){
+    gl_FragColor = texture2D(source,vTexCoord);
+  }
+#endif
+}

@@ -1,10 +1,12 @@
 <goml bgColor="black">
   <import-material typeName="img" src="./sort/img.sort"/>
   <import-material typeName="map" src="./sort/map.sort"/>
+  <import-material typeName="diff" src="./sort/diff.sort"/>
   <renderer>
     <texture-buffer name="bb1"/>
     <texture-buffer name="camBuf"/>
     <render-scene></render-scene>
+    <render-diff/>
   </renderer>
   <scene>
     <camera orthogonal="true" orthoSize="10"></camera>

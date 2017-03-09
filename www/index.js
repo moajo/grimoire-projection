@@ -7,6 +7,7 @@ UniformResolverRegistry.add("PROJ", (valinfo) => (proxy) => {
   proxy.uniformMatrix(valinfo.name, projectionMatrix);
 });
 
+
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia;
 window.URL = window.URL || window.webkitURL;
 
