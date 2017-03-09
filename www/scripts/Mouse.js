@@ -15,6 +15,12 @@ gr.registerComponent("Mouse", {
     var mouseUp = Rx.Observable.fromEvent(canvas, "mouseup");
     var mouseMove = Rx.Observable.fromEvent(canvas, "mousemove");
 
+    var aspect = camera.getAttribute("aspect");
+    var ymax = camera.getAttribute("orthoSize");
+    var xmax = ymax * aspect;
+    var pos = this.node.getAttribute("position");
+    this.viewportPos = [((pos.X / xmax) + 1) / 2, ((-pos.Y / ymax) + 1) / 2];
+
     var ismouseonP1 = false;
     Rx.Observable.fromEvent(this.node, "mouseenter").subscribe(() => {
       ismouseonP1 = true;
@@ -61,7 +67,8 @@ gr.registerComponent("Mouse", {
       //update viewportPos
       var pos = this.node.getAttribute("position");
       this.viewportPos = [((pos.X / xmax) + 1) / 2, ((-pos.Y / ymax) + 1) / 2];
-      console.log(this.viewportPos.X, this.viewportPos.Y);
+      // console.log(thiss.viewportPos.X, this.viewportPos.Y);
+
     });
   }
 });

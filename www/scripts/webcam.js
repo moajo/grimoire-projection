@@ -6,12 +6,12 @@ gr.registerComponent("Webcam", {
     }
   },
   $mount: function () {
-    var _this = this;
+    let _this = this;
     navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
-    navigator.getUserMedia({ video: true, audio: false },
+    navigator.getUserMedia({ video: { width: 1920, height: 1080 }, audio: false },
       (localMediaStream) => {
-        var url = (window.URL || window.webkitURL);
-        video = document.createElement('video');
+        let url = (window.URL || window.webkitURL);
+        let video = document.createElement('video');
         video.addEventListener('canplay', function () {
           video.removeEventListener('canplay', arguments.callee, true);
           video.play();

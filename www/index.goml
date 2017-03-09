@@ -1,26 +1,24 @@
-<goml>
+<goml bgColor="black">
   <import-material typeName="img" src="./sort/img.sort"/>
   <import-material typeName="map" src="./sort/map.sort"/>
   <renderer>
     <texture-buffer name="bb1"/>
     <texture-buffer name="camBuf"/>
-    <!-- <render-quad id="r" material="new(map)" source="backbuffer(bb1)" l1="1,0,0"/> -->
-    <render-quad material="new(img)" out="camBuf">
-      <render-quad.components>
-        <Webcam target="source"/>
-      </render-quad.components>
-    </render-quad>
     <render-scene></render-scene>
   </renderer>
   <scene>
     <camera orthogonal="true" orthoSize="10"></camera>
-    <mesh geometry="quad" texture="backbuffer(camBuf)" position="-3,0,-2" scale="5"></mesh>
-    <mouse-mesh id="p1" geometry="sphere" color="red" position="-2,2,0">
+    <mesh geometry="quad" material="new(map)" position="-3,0,-200" scale="5">
+      <mesh.components>
+        <Webcam target="source"/>
+      </mesh.components>
+    </mesh>
+    <mouse-mesh id="p1" geometry="sphere" color="red" position="-2,2,0" scale="0.4">
       <mesh geometry="sphere" color="white" position="0,0,3" scale="0.3"></mesh>
     </mouse-mesh>
-    <mouse-mesh id="p2" geometry="sphere" color="red" position="2,2,0"></mouse-mesh>
-    <mouse-mesh id="p3" geometry="sphere" color="red" position="2,-2,0"/>
-    <mouse-mesh id="p4" geometry="sphere" color="red" position="-2,-2,0"/>
+    <mouse-mesh id="p2" geometry="sphere" color="red" position="2,2,0" scale="0.4"></mouse-mesh>
+    <mouse-mesh id="p3" geometry="sphere" color="red" position="2,-2,0" scale="0.4"/>
+    <mouse-mesh id="p4" geometry="sphere" color="red" position="-2,-2,0" scale="0.4"/>
 
   </scene>
 </goml>

@@ -6,22 +6,19 @@ varying vec2 vTexCoord;
 
 #ifdef VS
 
-@{type:"vector3", default:"1,0,0"}
-uniform vec3 l1;
-@{type:"vector3", default:"0,1,0"}
-uniform vec3 l2;
-@{type:"vector3", default:"0,0,1"}
-uniform vec3 l3;
+@PROJ
+uniform mat4 projection;
 
 attribute vec3 position;
 attribute vec2 texCoord;
 
 void main(){
-  mat3 a = mat3(l1,l2,l3);
 
 
-  gl_Position = vec4(a*position,1);
-  vTexCoord = vec2(texCoord.x,1.-texCoord.y);
+  gl_Position = vec4(position,1.);
+  vec4 a = projection * vec4(texCoord,1.,0.);
+
+  vTexCoord = vec2(a.x/a.z,a.y/a.z);
 }
 
 #endif

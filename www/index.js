@@ -1,3 +1,11 @@
+const UniformResolverRegistry = gr.lib.fundamental.Material.UniformResolverRegistry;
+const Matrix = gr.lib.math.Matrix;
+
+let projectionMatrix = Matrix.identity();
+UniformResolverRegistry.add("PROJ", (valinfo) => (proxy) => {
+  proxy.uniformMatrix(valinfo.name, projectionMatrix);
+});
+
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia;
 window.URL = window.URL || window.webkitURL;
 
@@ -16,29 +24,28 @@ gr(function () {
     var p3p = p3.getAttribute("viewportPos");
     var p4p = p4.getAttribute("viewportPos");
 
-    console.log(p1p);
+    console.log(p1p.X, p1p.Y);
+    console.log(p2p.X, p2p.Y);
+    console.log(p3p.X, p3p.Y);
+    console.log(p4p.X, p4p.Y);
 
     var mat = getSystem(p1p, p2p, p3p, p4p);
     console.log(mat);
-    gr("#maingoml")("#r").setAttribute("l1", [mat[0], mat[3], mat[6]]);
-    gr("#maingoml")("#r").setAttribute("l2", [mat[1], mat[4], mat[7]]);
-    gr("#maingoml")("#r").setAttribute("l3", [mat[2], mat[5], 1]);
+
+    projectionMatrix.rawElements = [mat[0], mat[3], mat[6], 0,
+     mat[1], mat[4], mat[7], 0,
+      mat[2], mat[5], 1, 0,
+       0, 0, 0, 1];
+    Matrix.transpose(projectionMatrix);
+
+    console.log(projectionMatrix);
+    // gr("#maingoml")("#r").setAttribute("l1", [mat[0], mat[3], mat[6]]);
+    // gr("#maingoml")("#r").setAttribute("l2", [mat[1], mat[4], mat[7]]);
+    // gr("#maingoml")("#r").setAttribute("l3", [mat[2], mat[5], 1]);
+
   }
 
 });
-
-var video = document.getElementById('myVideo');
-var localStream = null;
-navigator.getUserMedia({ video: true, audio: false },
-  function (stream) { // for success case
-    // console.log(stream);
-    video.src = window.URL.createObjectURL(stream);
-  },
-  function (err) { // for error case
-    console.log(err);
-  }
-);
-
 
 function updateMat() {
   _updateMat();
@@ -89,36 +96,14 @@ function DocumentExitFullscreen(document_obj) {
   return false;
 }
 
-
-
-// var canvas = document.getElementById("canvas");
-// var context = canvas.getContext("2d");
-
-function g() {
-  var wrapper = document.getElementById("wrapper");
-  var w = wrapper.clientWidth;
-  var h = wrapper.clientHeight;
-  console.log(w, h);
-  console.log(video.width, video.height);
-}
-
 window.onload = function () {
-  window.innerWidth
-  window.innerHeight
   var wrapper = document.getElementById("wrapper");
   var w = wrapper.clientWidth;
   var h = wrapper.clientHeight;
   var canvas = document.getElementById("maingoml");
   canvas.width = w;
   canvas.height = h;
-  video.width = w;
-  video.height = h;
 
-  // context.globalAlpha = 0.5;
-  // context.fillStyle = "rgba(255,0,0,1.0)";
-  // context.fillRect(20, 20, 40, 40);
-  //TODO:http://qiita.com/ShinyaOkazawa/items/9e662bf2121548f79d5f
-  //キャンバスをCSSで変形さすと図形が引き伸ばされる
   var list = [];
   list.push({ x: 0, y: 0 })
   // var a = getSystem(list);
