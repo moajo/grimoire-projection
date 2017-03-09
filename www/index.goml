@@ -8,17 +8,29 @@
   </renderer>
   <scene>
     <camera orthogonal="true" orthoSize="10"></camera>
-    <mesh geometry="quad" material="new(map)" position="-3,0,-200" scale="5">
+    <mesh id="bgwebcam" geometry="quad" material="new(map)" position="-3,0,-200" scale="5">
       <mesh.components>
         <Webcam target="source"/>
       </mesh.components>
     </mesh>
-    <mouse-mesh id="p1" geometry="sphere" color="red" position="-2,2,0" scale="0.4">
-      <mesh geometry="sphere" color="white" position="0,0,3" scale="0.3"></mesh>
-    </mouse-mesh>
-    <mouse-mesh id="p2" geometry="sphere" color="red" position="2,2,0" scale="0.4"></mouse-mesh>
-    <mouse-mesh id="p3" geometry="sphere" color="red" position="2,-2,0" scale="0.4"/>
-    <mouse-mesh id="p4" geometry="sphere" color="red" position="-2,-2,0" scale="0.4"/>
+
+    <object enabled="false">
+      <mouse-mesh id="p1" geometry="sphere" color="red" position="-2,2,0" scale="0.4">
+        <mesh geometry="sphere" color="white" position="0,0,3" scale="0.3"></mesh>
+        <!-- <text text="1" size="20" position="0,0,5" color="#ff0000"/> -->
+      </mouse-mesh>
+      <mouse-mesh id="p2" color="red" position="2,2,0" scale="0.4"></mouse-mesh>
+      <mouse-mesh id="p3" color="red" position="2,-2,0" scale="0.4"/>
+      <mouse-mesh id="p4" color="red" position="-2,-2,0" scale="0.4"/>
+    </object>
+
+    <!-- <mouse-mesh id="game_1" geometry="sphere" color="white" position="-5,-2,0" scale="1.9">
+      <text text="1" size="4" position="0.2,0,5"  color="blue"/>
+    </mouse-mesh> -->
+    <!-- <touch-target id="game_2" geometry="sphere" color="white" position="-2,-2,0" scale="1"/> -->
+
+    <!-- げーむ管理のーど -->
+    <time-attack-manager/>
 
   </scene>
 </goml>

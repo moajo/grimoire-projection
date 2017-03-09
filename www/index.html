@@ -2,12 +2,16 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.2/howler.js"></script>
+    <script src="./scripts/sounds.js"></script>
     <script src="./lib/rx.all.js" charset="utf-8"></script>
     <script src="./lib/grimoire.js.link" charset="utf-8"></script>
     <script src="./lib/grimoire-math.js.link" charset="utf-8"></script>
     <script src="./lib/grimoire-fundamental.js.link" charset="utf-8"></script>
+    <script src="https://unpkg.com/grimoirejs-text/register/grimoire-text.min.js"></script>
     <script src="./scripts/Mouse.js" charset="utf-8"></script>
     <script src="./scripts/webcam.js" charset="utf-8"></script>
+    <script src="./scripts/gameManager.js" charset="utf-8"></script>
     <link rel="stylesheet" type="text/css" href="./index.css" media="all">
     <title></title>
   </head>
@@ -17,6 +21,9 @@
     <div id="wrapper" class="wrapper">
       <!-- <video id="myVideo" class="content"  autoplay="1" ></video> -->
       <script id="maingoml" class="content" type="text/goml" src="./index.goml" charset="utf-8"></script>
+      <div class="timeattack-time-container">
+        <h1 id="timeattack-time" class="hidden">3.14</h1>
+      </div>
     </div>
     <button type="button" name="button" onclick="fullScreen()">f</button>
     <button type="button" name="button" onclick="exitFullScreen()">e</button>

@@ -1,4 +1,4 @@
-gr.registerComponent("Mouse", {
+gr.registerComponent("Mouse", { //controll by mouse.
   attributes: {
     viewportPos: {
       converter: "Vector2",
@@ -72,5 +72,27 @@ gr.registerComponent("Mouse", {
     });
   }
 });
+gr.registerComponent("Touchable", { //タッチ。文字表示する
+  attributes: {
+    text: {
+      converter: "String",
+      default: "0"
+    }
+  },
+  $mount: function () {
+    let text = new GomlNode(gr.nodeDeclarations.get("text"));
+    text.setAttribute("size", 4);
+    text.setAttribute("position", [0.2, 0, 5]);
+    text.setAttribute("color", "blue");
+    this.getAttributeRaw("text").watch(function (newVal) {
+      text.setAttribute("text", newVal);
+    }, true)
+    this.node.addChild(text);
+  },
+  $touch: function () {
+    this.node.emit("touch");
+  }
+});
 
-gr.registerNode("mouse-mesh", ["Mouse"], {}, "mesh");
+gr.registerNode("mouse-mesh", ["Mouse"], { geometry: "sphere", color: "white", scale: "1.9" }, "mesh");
+gr.registerNode("touch-target", ["Touchable"], {}, "mouse-mesh"); //ゲームのタイムアタック用ターゲット

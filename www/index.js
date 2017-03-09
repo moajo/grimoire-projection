@@ -1,5 +1,6 @@
 const UniformResolverRegistry = gr.lib.fundamental.Material.UniformResolverRegistry;
 const Matrix = gr.lib.math.Matrix;
+const timer = document.getElementById("timeattack-time");
 
 let projectionMatrix = Matrix.identity();
 UniformResolverRegistry.add("PROJ", (valinfo) => (proxy) => {
@@ -51,49 +52,37 @@ function updateMat() {
   _updateMat();
 }
 
-function fullScreen() {
-  ElementRequestFullscreen(video);
+function toggleWebcam() { //webcamのオンオフ切替
+  var current = gr("*")("#bgwebcam").first().enabled;
+  gr("*")("#bgwebcam").first().enabled = !current;
 }
 
-function exitFullScreen() {
-  DocumentExitFullscreen(document);
+function gameReset_time() {
+  gr("*")("time-attack-manager").sendMessage("setup");
 }
 
-// ------------------------------------------------------------
-// エレメントをフルスクリーン表示する関数
-// ------------------------------------------------------------
-function ElementRequestFullscreen(element) {
-  var list = [
-		"requestFullscreen",
-		"webkitRequestFullScreen",
-		"mozRequestFullScreen",
-		"msRequestFullscreen"
-	];
-  for (var i = 0; i < list.length; i++) {
-    if (element[list[i]]) {
-      element[list[i]]();
-      return true;
-    }
+function touchAll() {
+  gr("*")("#target_0").sendMessage("touch");
+  gr("*")("#target_1").sendMessage("touch");
+  gr("*")("#target_2").sendMessage("touch");
+  gr("*")("#target_3").sendMessage("touch");
+  gr("*")("#target_4").sendMessage("touch");
+}
+
+function gameStart_time() {
+  const manager = gr("*")("time-attack-manager").first();
+  manager.sendMessage("gameStart");
+  timer.classList.remove("hidden");
+  const timeupdateHandler = function (time) {
+    timer.innerText = `${(time/1000).toFixed(2)}`;
   }
-  return false;
-}
+  manager.on("timeupdate", timeupdateHandler);
+  manager.on("finish", function (time) {
+    manager.removeListener("timeupdate", timeupdateHandler);
+    timer.innerText = `${(time/1000).toFixed(2)}`;
+  })
 
-function DocumentExitFullscreen(document_obj) {
-  var list = [
-		"exitFullscreen",
-		"webkitExitFullscreen",
-		"mozCancelFullScreen",
-		"msExitFullscreen"
-	];
-  var i;
-  var num = list.length;
-  for (i = 0; i < num; i++) {
-    if (document_obj[list[i]]) {
-      document_obj[list[i]]();
-      return true;
-    }
-  }
-  return false;
+
 }
 
 window.onload = function () {
@@ -108,10 +97,6 @@ window.onload = function () {
   list.push({ x: 0, y: 0 })
   // var a = getSystem(list);
 }
-
-
-
-
 
 
 function getSystem(p1, p2, p3, p4) {
