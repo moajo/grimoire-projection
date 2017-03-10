@@ -1,3 +1,11 @@
+/**
+ * 仕様：
+ * webcamera射影変換->webcamraw
+ * フレーム差分2値化丸め->diffBuffer
+ * ターゲットシルエット->targetHitarea
+ * 当たり判定->targetHitTest
+ */
+
 const UniformResolverRegistry = gr.lib.fundamental.Material.UniformResolverRegistry;
 const Matrix = gr.lib.math.Matrix;
 const timer = document.getElementById("timeattack-time");
@@ -7,16 +15,24 @@ UniformResolverRegistry.add("PROJ", (valinfo) => (proxy) => {
   proxy.uniformMatrix(valinfo.name, projectionMatrix);
 });
 
-
+// for webcam
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia;
 window.URL = window.URL || window.webkitURL;
 
+//debug key command
 document.addEventListener("keydown", function (e) {
   console.log(e.keyCode);
   if (e.keyCode === 80) { //p:テスト用板ポリの表示切替
     gr("*")("#testquad").first().enabled = !gr("*")("#testquad").first().enabled;
   } else if (e.keyCode === 32) { //space:ターゲットタッチ
-
+    throw new Error("notimplement");
+  } else if (e.keyCode === 85) { //u:射影行列更新.射影ガイドポインタdisabled.
+    updateMat();
+    gr("*")("#projectionGuide").first().enabled = false;
+  } else if (e.keyCode === 82) { //r:reset
+    gameReset_time()
+  } else if (e.keyCode === 83) { //s:start
+    gameStart_time();
   }
 })
 

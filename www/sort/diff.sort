@@ -5,7 +5,8 @@ FS_PREC(mediump,float)
 varying vec2 vTexCoord;
 
 float toGrayScale(vec4 color){
-  return 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
+  // return 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
+  return max(color.r,max(color.g,color.b));
 }
 
 #ifdef VS
@@ -25,18 +26,61 @@ void main(){
 
 uniform sampler2D source0;
 uniform sampler2D source1;
+uniform sampler2D source2;
+uniform sampler2D source3;
+uniform sampler2D source4;
+uniform sampler2D source5;
+uniform sampler2D source6;
+uniform sampler2D source7;
+uniform sampler2D source8;
+uniform sampler2D source9;
+uniform float threshold;//2値化のしきい値.default:0.1
 
   void main(){
     //フレーム間差分をかんたんにとる
-    vec4 scol1 = texture2D(source0,vTexCoord);
-    vec4 scol2 = texture2D(source1,vTexCoord);
+    vec4 scol0 = texture2D(source0,vTexCoord);
+    vec4 scol1 = texture2D(source1,vTexCoord);
+    vec4 scol2 = texture2D(source2,vTexCoord);
+    vec4 scol3 = texture2D(source3,vTexCoord);
+    vec4 scol4 = texture2D(source4,vTexCoord);
+    vec4 scol5 = texture2D(source5,vTexCoord);
+    vec4 scol6 = texture2D(source6,vTexCoord);
+    vec4 scol7 = texture2D(source7,vTexCoord);
+    vec4 scol8 = texture2D(source8,vTexCoord);
+    vec4 scol9 = texture2D(source9,vTexCoord);
 
-    vec4 diff = scol1-vec4(scol2.rgb,0);
+    vec4 diff0 = vec4(scol0.rgb-scol1.rgb,1);diff0=diff0*diff0;
+    vec4 diff1 = vec4(scol1.rgb-scol2.rgb,1);diff1=diff1*diff1;
+    vec4 diff2 = vec4(scol2.rgb-scol3.rgb,1);diff2=diff2*diff2;
+    vec4 diff3 = vec4(scol3.rgb-scol4.rgb,1);diff3=diff3*diff3;
+    vec4 diff4 = vec4(scol4.rgb-scol5.rgb,1);diff4=diff4*diff4;
+    vec4 diff5 = vec4(scol5.rgb-scol6.rgb,1);diff5=diff5*diff5;
+    vec4 diff6 = vec4(scol6.rgb-scol7.rgb,1);diff6=diff6*diff6;
+    vec4 diff7 = vec4(scol7.rgb-scol8.rgb,1);diff7=diff7*diff7;
+    vec4 diff8 = vec4(scol8.rgb-scol9.rgb,1);diff8=diff8*diff8;
 
-    float gray = toGrayScale(diff);
+    float gray0 = toGrayScale(diff0);
+    float gray1 = toGrayScale(diff1);
+    float gray2 = toGrayScale(diff2);
+    float gray3 = toGrayScale(diff3);
+    float gray4 = toGrayScale(diff4);
+    float gray5 = toGrayScale(diff5);
+    float gray6 = toGrayScale(diff6);
+    float gray7 = toGrayScale(diff7);
+    float gray8 = toGrayScale(diff8);
 
-    // gl_FragColor = scol1-vec4(scol2.rgb,0);
-    gl_FragColor = vec4(vec3(step(0.1,gray)),1);//2値化
+    float maxval = gray0;
+    maxval = max(maxval,gray1);
+    maxval = max(maxval,gray2);
+    maxval = max(maxval,gray3);
+    maxval = max(maxval,gray4);
+    maxval = max(maxval,gray5);
+    maxval = max(maxval,gray6);
+    maxval = max(maxval,gray7);
+    maxval = max(maxval,gray8);
+    // gl_FragColor = diff0;
+    // gl_FragColor = vec4(vec3(maxval),1);
+    gl_FragColor = vec4(vec3(step(threshold,maxval)),1);//2値化
   }
 
 

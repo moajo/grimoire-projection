@@ -10,7 +10,6 @@
     <!-- webcameraの射影変換をレンダリング -->
     <texture-buffer name="webcamraw"/>
     <texture-buffer name="diffBuffer"/>
-    <texture-buffer name="diffOut"/>
     <texture-buffer name="targetHitarea"/>
     <texture-buffer name="targetHitTest"/>
 
@@ -22,15 +21,10 @@
     </render-quad>
 
     <!-- 数フレーム前の結果を何枚か保持してる。nextにメッセージでバッファ列を送る -->
-    <render-buffer-array source="backbuffer(webcamraw)" next="#renderdiff" material="new(img)" bufferCount="2">
+    <render-buffer-array source="backbuffer(webcamraw)" next="#renderdiff" material="new(img)" bufferCount="10">
       <!-- バッファ列を投げられて差分計算 -->
-      <render-diff id="renderdiff" material="new(diff)" source="backbuffer(webcamraw)" out="diffBuffer"/>
+      <render-diff id="renderdiff" material="new(diff)" source="backbuffer(webcamraw)" out="diffBuffer" threshold="0.07"/>
     </render-buffer-array>
-
-    <!-- 過去の差分画像の最大を取っていい感じに時間を引き伸ばす -->
-    <!-- <render-buffer-array source="backbuffer(diffBuffer)" next="#tes" material="new(img)" bufferCount="1">
-      <render-diff id="tes" material="new(holdDiff)" out="diffOut" />
-    </render-buffer-array> -->
 
     <!-- あたり判定 -->
     <render-scene technique="hit" out="targetHitarea"/>
@@ -49,7 +43,7 @@
     <!-- テスト用表示 -->
     <mesh id="testquad" geometry="quad" position="0,0,-50" scale="2" color="green" material="new(rev)" source="backbuffer(diffBuffer)" />
 
-    <object enabled="true">
+    <object id="projectionGuide" enabled="true">
       <mouse-mesh id="p1" geometry="sphere" color="red" position="-2,2,0" scale="0.4">
         <mesh geometry="sphere" color="white" position="0,0,3" scale="0.3"></mesh>
         <!-- <text text="1" size="20" position="0,0,5" color="#ff0000"/> -->

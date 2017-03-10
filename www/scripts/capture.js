@@ -9,10 +9,6 @@ gr.registerComponent("RenderDiff", {
       default: "default",
       converter: "String",
     },
-    technique: {
-      default: "default",
-      converter: "String"
-    },
     bufferCount: {
       default: 2,
       converter: "Number"
@@ -29,7 +25,6 @@ gr.registerComponent("RenderDiff", {
 
   $awake: function () {
     this.getAttributeRaw("targetBuffer").boundTo("_targetBuffer");
-    this.getAttributeRaw("technique").boundTo("_technique");
   },
 
   $mount: function () {
@@ -53,13 +48,10 @@ gr.registerComponent("RenderDiff", {
 
   $bufferUpdated: function (args) {
     this.fboArray = [];
-    // this._fbo = [];
     const bufferCount = this.getAttribute("bufferCount");
     for (var i = 0; i < bufferCount; i++) {
-      this.fboArray[i] = { name: `diff_${i}`, fbo: new Framebuffer(this.companion.get("gl")) };
+      this.fboArray[i] = { name: `${this.getAttribute("arrayName")}_${i}`, fbo: new Framebuffer(this.companion.get("gl")) };
       this.fboArray[i].fbo.update(args.buffers[`${this.getAttribute("arrayName")}_${i}`]);
-      // this._fbo[i] = new Framebuffer(this.companion.get("gl"));
-      // this._fbo[i].update(args.buffers[`diff_${i}`]);
     }
     this._fboSize = args.bufferSizes[`${this.getAttribute("arrayName")}_0`];
     // console.log("updateBuffer!");
@@ -76,6 +68,8 @@ gr.registerComponent("RenderDiff", {
     const index = this.renderCount % bufferCount;
     // bound render target
     const obj = this.fboArray[index];
+    // console.log(`index: ${index} name: ${obj.name}`);
+
     obj.fbo.bind();
     this._gl.viewport(0, 0, this._fboSize.width, this._fboSize.height);
     // make rendering argument
@@ -87,7 +81,7 @@ gr.registerComponent("RenderDiff", {
       transform: null,
       buffers: args.buffers,
       viewport: args.viewport,
-      technique: this._technique
+      technique: "default"
     };
     renderArgs.attributeValues = this._materialContainer.materialArgs;
     // do render
@@ -107,6 +101,7 @@ gr.registerComponent("BufferArrayReciever", { //バッファ受けてシェー�
     for (var i = 0; i < bufferCount; i++) {
       const name = list[(obj.count - i + bufferCount) % bufferCount].name;
       const varName = `source${i}`;
+      // console.log(`name:${varName} ${name}`);
       this.node.setAttribute(varName, `backbuffer(${name})`);
     }
   }
