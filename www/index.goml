@@ -14,7 +14,7 @@
     <texture-buffer name="targetHitarea"/>
     <texture-buffer name="targetHitTest"/>
 
-
+    <!-- 射影変換 -->
     <render-quad material="new(map)" out="webcamraw">
       <render-quad.components>
         <Webcam target="source"/>
@@ -47,7 +47,7 @@
     </mesh>
 
     <!-- テスト用表示 -->
-    <mesh id="testquad" geometry="quad" position="0,0,-3" scale="2" color="green" material="new(rev)" source="backbuffer(diffBuffer)" />
+    <mesh id="testquad" geometry="quad" position="0,0,-50" scale="2" color="green" material="new(rev)" source="backbuffer(diffBuffer)" />
 
     <object enabled="true">
       <mouse-mesh id="p1" geometry="sphere" color="red" position="-2,2,0" scale="0.4">

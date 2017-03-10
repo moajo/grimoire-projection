@@ -16,7 +16,7 @@ void main(){
 
 
   gl_Position = vec4(position,1.);
-  vec4 a = projection * vec4(texCoord,1.,0.);
+  vec4 a = projection * vec4(texCoord.x,texCoord.y,1.,0.);
 
   vTexCoord = vec2(a.x/a.z,a.y/a.z);
 }

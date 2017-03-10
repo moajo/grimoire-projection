@@ -41,7 +41,7 @@ gr(function () {
     console.log(p4p.X, p4p.Y);
 
     var mat = getSystem(p1p, p2p, p3p, p4p);
-    console.log(mat);
+    // console.log(mat);
 
     projectionMatrix.rawElements = [mat[0], mat[3], mat[6], 0,
      mat[1], mat[4], mat[7], 0,
@@ -49,7 +49,7 @@ gr(function () {
        0, 0, 0, 1];
     Matrix.transpose(projectionMatrix);
 
-    console.log(projectionMatrix);
+    // console.log(projectionMatrix);
     // gr("#maingoml")("#r").setAttribute("l1", [mat[0], mat[3], mat[6]]);
     // gr("#maingoml")("#r").setAttribute("l2", [mat[1], mat[4], mat[7]]);
     // gr("#maingoml")("#r").setAttribute("l3", [mat[2], mat[5], 1]);
@@ -96,16 +96,13 @@ function gameStart_time() {
 }
 
 window.onload = function () {
+
   var wrapper = document.getElementById("wrapper");
   var w = wrapper.clientWidth;
   var h = wrapper.clientHeight;
   var canvas = document.getElementById("maingoml");
   canvas.width = w;
   canvas.height = h;
-
-  var list = [];
-  list.push({ x: 0, y: 0 })
-  // var a = getSystem(list);
 }
 
 

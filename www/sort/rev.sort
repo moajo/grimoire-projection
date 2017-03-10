@@ -8,7 +8,7 @@ varying vec2 vTexCoord;
 attribute vec3 position;
 attribute vec2 texCoord;
 
-void main(){
+void main(){//上下反転
   gl_Position = vec4(position,1);
   vTexCoord = vec2(texCoord.x,1.-texCoord.y);
 }
