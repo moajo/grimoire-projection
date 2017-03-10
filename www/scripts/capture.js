@@ -112,83 +112,69 @@ gr.registerComponent("BufferArrayReciever", { //バッファ受けてシェー�
   }
 });
 
-// gr.registerComponent("DetectTouch",{//動体と重なってるか判定するやつ
-//   $mount:function() {
-//     this._sceneRenderer = this.node.getComponent(RenderSceneComponent);
-//     if (!this._sceneRenderer) {
-//       throw new Error("The node attaching RenderHitArea should contain RenderScene.")
-//     }
-//     this._gl = this.companion.get("gl");
-//     this._canvas = this.companion.get("canvasElement");
-//     this.hitareaTexture = new Texture2D(this._gl);
-//     this.hitareaRenderbuffer = new RenderBuffer(this._gl);
-//     if (this.hitareaFBO) {
-//       this.hitareaFBO.destroy();
-//       this.hitareaFBO = null;
-//     }
-//   },
-//   $resizeBuffer:function(args) {
-//     const size = TextureSizeCalculator.getPow2Size(args.width, args.height);
-//     this._bufferSize = [size.width, size.height];
-//     this.hitareaTexture.update(0, size.width, size.height, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE);
-//     this.hitareaRenderbuffer.update(WebGLRenderingContext.DEPTH_COMPONENT16, size.width, size.height);
-//     if (!this.hitareaFBO) {
-//       this.hitareaFBO = new Framebuffer(this._gl);
-//       this.hitareaFBO.update(this.hitareaTexture);
-//       this.hitareaFBO.update(this.hitareaRenderbuffer);
-//     }
-//   },
-//   $render:function(args) {
-//     this.hitareaFBO.bind();
-//     this._gl.viewport(0, 0, this._bufferSize[0], this._bufferSize[1]);
-//     // clear buffer if needed
-//     this._gl.clearColor(0, 0, 0, 0);
-//     this._gl.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
-//     this._gl.clearDepth(1);
-//     this._gl.clear(WebGLRenderingContext.DEPTH_BUFFER_BIT);
-//     const camera = this._sceneRenderer.camera || args.camera;
-//     camera.renderScene({
-//       renderer: this._sceneRenderer, // TODO
-//       camera: camera,
-//       buffers: args.buffers,
-//       layer: this._sceneRenderer.layer,
-//       viewport: args.viewport,
-//       loopIndex: args.loopIndex,
-//       technique: "hitarea",
-//       sceneDescription: {}
-//     });
-//     this._gl.flush();
-//     this._gl.readPixels(this._lastPosition[0] * this._bufferSize[0], this._lastPosition[1] * this._bufferSize[1], 1, 1, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, this._readCache);
-//     const index = MeshIndexCalculator.fromColor(this._readCache);
-//     if (index === 0) { // there was no object at pointer
-//       if (this._lastRenderable instanceof Component) {
-//         this._lastRenderable.node.emit("mouseleave", this._lastRenderable);
-//       }
-//       this._lastRenderable = null;
-//     } else {
-//       const r = camera.containedScene.queueRegistory.getByIndex(index - 1);
-//       if (this._lastRenderable !== r) {
-//         if (this._lastRenderable instanceof Component) {
-//           this._lastRenderable.node.emit("mouseleave", this._lastRenderable);
-//         }
-//         if (r instanceof Component) {
-//           r.node.emit("mouseenter", r);
-//         }
-//       } else {
-//         if (r instanceof Component) {
-//           if (this._mouseMoved) {
-//             r.node.emit("mousemove", r);
-//           } else {
-//             r.node.emit("mouseon", r);
-//           }
-//         }
-//       }
-//       this._lastRenderable = r;
-//     }
-//     this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
-//   }
-//
-// });
+gr.registerComponent("RenderTouchTarget", { //ヒットしてるオブジェクトのIDを探す
+  attributes: {
+    out: {
+      default: "default",
+      converter: "String"
+    },
+    targetBuffer: {
+      default: "default",
+      converter: "String",
+    }
+  },
+  $awake: function () {
+    this.getAttributeRaw("targetBuffer").boundTo("_targetBuffer");
+  },
+  $mount: function () {
+    this._gl = this.companion.get("gl");
+    this._canvas = this.companion.get("canvasElement");
+    const gr = this.companion.get("GeometryRegistory");
+    this._geom = gr.getGeometry("quad");
+    this._materialContainer = this.node.getComponent(MaterialContainerComponent);
+  },
+  $bufferUpdated(args) {
+    const out = this.getAttribute("out");
+    if (out !== "default") {
+      this._fbo = new Framebuffer(this.companion.get("gl"));
+      this._fbo.update(args.buffers[out]);
+      this._fboSize = args.bufferSizes[out];
+    } else {
+      throw new Error("aaaa");
+    }
+  },
+  $render: function (args) {
+    if (!this._materialContainer.materialReady) {
+      return;
+    }
+    // bound render target
+    this._fbo.bind();
+    this._gl.viewport(0, 0, this._fboSize.width, this._fboSize.height);
+
+    // clear buffer if needed
+    if (this._fbo && this._clearColorEnabled) {
+      this._gl.clearColor(this._clearColor.R, this._clearColor.G, this._clearColor.B, this._clearColor.A);
+      this._gl.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
+    }
+    // make rendering argument
+    const renderArgs = {
+      targetBuffer: this._targetBuffer,
+      geometry: this._geom,
+      attributeValues: {},
+      camera: null,
+      transform: null,
+      buffers: args.buffers,
+      viewport: args.viewport,
+      technique: "default"
+    };
+    renderArgs.attributeValues = this._materialContainer.materialArgs;
+    // do render
+    this._materialContainer.material.draw(renderArgs);
+    this._gl.flush();
+  }
+
+});
 
 gr.registerNode("render-buffer-array", ["MaterialContainer", "RenderDiff"], { material: null });
 gr.registerNode("render-diff", ["BufferArrayReciever"], {}, "render-quad");
+gr.registerNode("render-touch-detect", ["MaterialContainer", "RenderTouchTarget"], {});

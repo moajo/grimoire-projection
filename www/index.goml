@@ -34,6 +34,7 @@
     <!-- あたり判定 -->
     <render-scene technique="hit" out="targetHitarea"/>
     <render-quad material="new(hittest)" hitarea="backbuffer(targetHitarea)" diff="backbuffer(diffBuffer)" out="targetHitTest"/>
+
     <render-scene></render-scene>
   </renderer>
   <scene>
