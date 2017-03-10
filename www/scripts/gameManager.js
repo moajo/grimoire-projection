@@ -1,12 +1,21 @@
 const GomlNode = gr.Node.GomlNode;
 
+/**
+ * タイムアタックするゲーム。
+ * targetCountの数だけターゲットを配置し、1晩から順に触れて最後に触れたらゴール。
+ * 配置終えたらまずリセット。
+ * ゴールしたらリセットボタンでリセット。
+ * 途中でもリセット可能。
+ *
+ * @type {Object}
+ */
 gr.registerComponent("TimeAttackGameManager", {
   attributes: {
     targetCount: {
       converter: "Number",
       default: "5"
     },
-    currentTime: {
+    currentTime: { //現在のプレイタイム
       converter: "Number",
       default: "0"
     }
