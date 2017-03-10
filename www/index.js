@@ -11,6 +11,15 @@ UniformResolverRegistry.add("PROJ", (valinfo) => (proxy) => {
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia;
 window.URL = window.URL || window.webkitURL;
 
+document.addEventListener("keydown", function (e) {
+  console.log(e.keyCode);
+  if (e.keyCode === 80) { //p:テスト用板ポリの表示切替
+    gr("*")("#testquad").first().enabled = !gr("*")("#testquad").first().enabled;
+  } else if (e.keyCode === 32) { //space:ターゲットタッチ
+
+  }
+})
+
 var _updateMat = function () {
 
 };

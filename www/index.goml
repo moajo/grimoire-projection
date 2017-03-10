@@ -1,5 +1,6 @@
 <goml bgColor="black">
   <import-material typeName="img" src="./sort/img.sort"/>
+  <import-material typeName="rev" src="./sort/rev.sort"/>
   <import-material typeName="map" src="./sort/map.sort"/>
   <import-material typeName="diff" src="./sort/diff.sort"/>
   <import-material typeName="holdDiff" src="./sort/holdDiff.sort"/>
@@ -33,7 +34,7 @@
 
     <!-- あたり判定 -->
     <render-scene technique="hit" out="targetHitarea"/>
-    <render-quad material="new(hittest)" hitarea="backbuffer(targetHitarea)" diff="backbuffer(diffBuffer)" out="targetHitTest"/>
+    <render-touch-detect material="new(hittest)" hitarea="backbuffer(targetHitarea)" diff="backbuffer(diffBuffer)" out="targetHitTest"/>
 
     <render-scene></render-scene>
   </renderer>
@@ -44,7 +45,9 @@
         <Webcam target="source"/>
       </mesh.components>
     </mesh>
-    <mesh geometry="quad" position="0,0,-3" scale="2" color="green" material="new(img)" source="backbuffer(targetHitTest)" />
+
+    <!-- テスト用表示 -->
+    <mesh id="testquad" geometry="quad" position="0,0,-3" scale="2" color="green" material="new(rev)" source="backbuffer(diffBuffer)" />
 
     <object enabled="true">
       <mouse-mesh id="p1" geometry="sphere" color="red" position="-2,2,0" scale="0.4">

@@ -1,4 +1,4 @@
-gr.registerComponent("Mouse", { //controll by mouse.
+gr.registerComponent("Mouse", { //マウスで動かすやつ
   attributes: {
     viewportPos: {
       converter: "Vector2",
@@ -82,8 +82,16 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
     }
   },
   $awake: function () {
+    const _this = this;
     this.node.setAttribute("nodeID", touchableCount / 255);
     touchableCount += 10;
+    this.node.on("touch", function () {
+      // console.log(`touch!: ${this.getAttribute("text")}`);
+      _this.node.setAttribute("color", "blue");
+      setTimeout(function () {
+        _this.node.setAttribute("color", "white");
+      }, 100);
+    });
   },
   $mount: function () {
     let text = new GomlNode(gr.nodeDeclarations.get("text"));
@@ -101,4 +109,4 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
 });
 
 gr.registerNode("mouse-mesh", ["Mouse"], { geometry: "sphere", color: "white", scale: "1.9" }, "mesh");
-gr.registerNode("touch-target", ["Touchable"], { material: "new(target)" }, "mouse-mesh"); //ゲームのタイムアタック用ターゲット
+gr.registerNode("touch-target", ["Touchable"], { material: "new(target)", class: "touchTarget" }, "mouse-mesh"); //ゲームのタイムアタック用ターゲット

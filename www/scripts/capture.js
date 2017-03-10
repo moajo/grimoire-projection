@@ -131,7 +131,7 @@ gr.registerComponent("RenderTouchTarget", { //ヒットしてるオブジェク�
     this._canvas = this.companion.get("canvasElement");
     const gr = this.companion.get("GeometryRegistory");
     this._geom = gr.getGeometry("quad");
-    this._materialContainer = this.node.getComponent(MaterialContainerComponent);
+    this._materialContainer = this.node.getComponent("MaterialContainer");
   },
   $bufferUpdated(args) {
     const out = this.getAttribute("out");
@@ -171,6 +171,31 @@ gr.registerComponent("RenderTouchTarget", { //ヒットしてるオブジェク�
     // do render
     this._materialContainer.material.draw(renderArgs);
     this._gl.flush();
+
+    //
+    let pixels = new Uint8Array(this._fboSize.width * this._fboSize.height * 4);
+    this._gl.readPixels(0, 0, this._fboSize.width, this._fboSize.height, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, pixels);
+    const targets = gr("*")(".touchTarget").toArray();
+    const map = {};
+    targets.forEach(t => {
+      const id = t.getAttribute("nodeID") * 255;
+      map[Math.round(id)] = { node: t, count: 0 };
+    })
+    for (var i = 0; i < pixels.length; i += 4) {
+      const col = pixels[i];
+      if (col === 0) {
+        continue;
+      }
+      map[col].count++;
+    }
+    // console.log(map);
+
+    for (let key in map) {
+      const t = map[key];
+      if (t.count > 20) {
+        t.node.sendMessage("touch");
+      }
+    }
   }
 
 });
