@@ -81,7 +81,6 @@ gr.registerComponent("TimeAttackGameManager", {
           console.log(`time: ${clearTime}`);
 
           _this.node.emit("finish", clearTime);
-
         }
       });
     }, 2000);
@@ -95,25 +94,6 @@ gr.registerComponent("TimeAttackGameManager", {
   }
 
 });
-// gr.registerComponent("TimeAttackGameManager", {
-//   attributes: {
-//     viewportPos: {
-//       converter: "Vector2",
-//       default: "0,0"
-//     }
-//   },
-//   $awake: function () {
-//     this.__bindAttributes();
-//   },
-//   $mount: function () {
-//
-//   },
-//
-//   $gameStart: function () {
-//
-//   }
-//
-// });
 
 // gr.registerNode("game-anager", ["Mouse"]);
 gr.registerNode("time-attack-manager", ["TimeAttackGameManager"]);

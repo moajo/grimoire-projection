@@ -1,55 +1,41 @@
 const Framebuffer = gr.lib.fundamental.Resource.FrameBuffer;
+/**
+ * ソースのテクスチャを数フレーム保持するだけ。nextに毎フレーム通知する。
+ * @type {Object}
+ */
 gr.registerComponent("RenderDiff", {
   attributes: {
     targetBuffer: {
       default: "default",
       converter: "String",
     },
-    // clearColor: {
-    //   default: "#0000",
-    //   converter: "Color4",
-    // },
-    // clearColorEnabled: {
-    //   default: true,
-    //   converter: "Boolean",
-    // },
-    // clearDepthEnabled: {
-    //   default: true,
-    //   converter: "Boolean",
-    // },
-    // clearDepth: {
-    //   default: 1.0,
-    //   converter: "Number",
-    // },
     technique: {
       default: "default",
       converter: "String"
     },
     bufferCount: {
-      default: 10,
+      default: 2,
       converter: "Number"
+    },
+    next: {
+      default: null,
+      converter: "Node"
     }
   },
 
   $awake: function () {
     this.getAttributeRaw("targetBuffer").boundTo("_targetBuffer");
-    // this.getAttributeRaw("clearColor").boundTo("_clearColor");
-    // this.getAttributeRaw("clearColorEnabled").boundTo("_clearColorEnabled");
-    // this.getAttributeRaw("clearDepthEnabled").boundTo("_clearDepthEnabled");
-    // this.getAttributeRaw("clearDepth").boundTo("_clearDepth");
     this.getAttributeRaw("technique").boundTo("_technique");
-
-    this.textureBuffers = [];
-
   },
 
   $mount: function () {
     this._gl = this.companion.get("gl");
     this._canvas = this.companion.get("canvasElement");
-    const geometryRegistory = this.companion.get("GeometryRegistory");
-    this._geom = geometryRegistory.getGeometry("quad");
+    this._geom = this.companion.get("GeometryRegistory").getGeometry("quad");
     this._materialContainer = this.node.getComponent("MaterialContainer");
 
+
+    // create buffer array
     const tbd = gr.nodeDeclarations.get("texture-buffer");
     this.textureBuffers = [];
     const bufferCount = this.getAttribute("bufferCount");
@@ -64,19 +50,20 @@ gr.registerComponent("RenderDiff", {
   $bufferUpdated: function (args) {
     // const out = this.getAttribute("out");
     // if (out !== "default") {
-    this._fbo = [];
+    this.fboArray = [];
+    // this._fbo = [];
     const bufferCount = this.getAttribute("bufferCount");
     for (var i = 0; i < bufferCount; i++) {
-      this._fbo[i] = new Framebuffer(this.companion.get("gl"));
-      this._fbo[i].update(this.textureBuffers[i]);
+      this.fboArray[i] = { name: `diff_${i}`, fbo: new Framebuffer(this.companion.get("gl")) };
+      this.fboArray[i].fbo.update(args.buffers[`diff_${i}`]);
+      // this._fbo[i] = new Framebuffer(this.companion.get("gl"));
+      // this._fbo[i].update(args.buffers[`diff_${i}`]);
     }
-    this._fboSize = args.bufferSizes[0];
+    this._fboSize = args.bufferSizes["diff_0"];
+    console.log("updateBuffer!");
+    console.log(args);
+    this.renderCount = 0;
 
-    //rergister buffer uniform
-    const UniformResolverRegistry = gr.lib.fundamental.Material.UniformResolverRegistry;
-    UniformResolverRegistry.add("DIFF_1", (valinfo) => (proxy) => {
-      proxy.uniformMatrix(valinfo.name, this._fbo[0]);
-    });
     // }
     // const depthBuffer = this.getAttribute("depthBuffer");
     // if (depthBuffer && this._fbo) {
@@ -88,42 +75,68 @@ gr.registerComponent("RenderDiff", {
     if (!this._materialContainer.materialReady) {
       return;
     }
+    const bufferCount = this.getAttribute("bufferCount");
+    this.renderCount++;
+    const index = this.renderCount % bufferCount;
     // bound render target
-    if (this._fbo) {
-      this._fbo.forEach(fbo => {
-        fbo.bind();
-        this._gl.viewport(0, 0, this._fboSize.width, this._fboSize.height);
-        // make rendering argument
-        const renderArgs = {
-          targetBuffer: this._targetBuffer,
-          geometry: this._geom,
-          attributeValues: {},
-          camera: null,
-          transform: null,
-          buffers: args.buffers,
-          viewport: args.viewport,
-          technique: this._technique
-        };
-        renderArgs.attributeValues = this._materialContainer.materialArgs;
-        // do render
-        this._materialContainer.material.draw(renderArgs);
-        this._gl.flush();
-      });
-    } else {
-      // this._gl.bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, null);
-      // this._gl.viewport(args.viewport.Left, this._canvas.height - args.viewport.Bottom, args.viewport.Width, args.viewport.Height);
-    }
-    // clear buffer if needed
-    // if (this._fbo && this._clearColorEnabled) {
-    //   this._gl.clearColor(this._clearColor.R, this._clearColor.G, this._clearColor.B, this._clearColor.A);
-    //   this._gl.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
-    // }
-    // if (this._clearDepthEnabled) {
-    //   this._gl.clearDepth(this._clearDepth);
-    //   this._gl.clear(WebGLRenderingContext.DEPTH_BUFFER_BIT);
+    // if (this._fbo) {
+    const obj = this.fboArray[index];
+    obj.fbo.bind();
+    this._gl.viewport(0, 0, this._fboSize.width, this._fboSize.height);
+    // make rendering argument
+    const renderArgs = {
+      targetBuffer: this._targetBuffer,
+      geometry: this._geom,
+      attributeValues: {},
+      camera: null,
+      transform: null,
+      buffers: args.buffers,
+      viewport: args.viewport,
+      technique: this._technique
+    };
+    renderArgs.attributeValues = this._materialContainer.materialArgs;
+    // do render
+    this._materialContainer.material.draw(renderArgs);
+    this._gl.flush();
+
+    // this.fboArray.forEach(obj => {
+    //   obj.fbo.bind();
+    //   this._gl.viewport(0, 0, this._fboSize.width, this._fboSize.height);
+    //   // make rendering argument
+    //   const renderArgs = {
+    //     targetBuffer: this._targetBuffer,
+    //     geometry: this._geom,
+    //     attributeValues: {},
+    //     camera: null,
+    //     transform: null,
+    //     buffers: args.buffers,
+    //     viewport: args.viewport,
+    //     technique: this._technique
+    //   };
+    //   renderArgs.attributeValues = this._materialContainer.materialArgs;
+    //   // do render
+    //   this._materialContainer.material.draw(renderArgs);
+    //   this._gl.flush();
+    //
+    // });
+    this.getAttribute("next").sendMessage("updateBufferArray", { count: this.renderCount, array: this.fboArray });
     // }
 
   }
 });
 
-gr.registerNode("render-diff", ["MaterialContainer", "RenderDiff"], { material: null });
+gr.registerComponent("BufferArrayReciever", { //バッファ受けてシェーダに渡す。
+  $updateBufferArray: function (obj) {
+    const list = obj.array;
+    const bufferCount = list.length;
+    const index = obj.count % bufferCount;
+    console.log("recieve!!!!!!!:" + index);
+    // console.log(list[0]);
+    this.node.setAttribute("source", `backbuffer(${list[obj.count % bufferCount].name})`);
+    this.node.setAttribute("source2", `backbuffer(${list[(obj.count-1) % bufferCount].name})`);
+    // this.node.setAttribute("source", list[2].name);
+  }
+});
+
+gr.registerNode("render-buffer-array", ["MaterialContainer", "RenderDiff"], { material: null });
+gr.registerNode("render-diff", ["BufferArrayReciever"], {}, "render-quad");
