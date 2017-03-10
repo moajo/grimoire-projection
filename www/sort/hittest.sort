@@ -1,0 +1,35 @@
+@Pass{
+@Disable(BLEND)
+@Disable(DEPTH_TEST)
+FS_PREC(mediump,float)
+varying vec2 vTexCoord;
+
+#ifdef VS
+
+
+attribute vec3 position;
+attribute vec2 texCoord;
+
+void main(){
+  vTexCoord = vec2(texCoord.x,texCoord.y);
+  gl_Position = vec4(position,1.);
+}
+
+#endif
+
+#ifdef FS
+
+uniform sampler2D hitarea;//ターゲットのヒットエリアテクスチャ
+uniform sampler2D diff;//動体テクスチャ
+
+  void main(){
+    vec4 hitareacolor = texture2D(hitarea,vTexCoord);
+    float gray = texture2D(diff,vTexCoord).r;
+
+    // gl_FragColor = hitareacolor;
+    gl_FragColor = vec4(hitareacolor.xyz*gray,1);
+  }
+
+
+#endif
+}

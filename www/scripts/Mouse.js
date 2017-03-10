@@ -72,12 +72,18 @@ gr.registerComponent("Mouse", { //controll by mouse.
     });
   }
 });
+
+let touchableCount = 10;
 gr.registerComponent("Touchable", { //タッチ。文字表示する
   attributes: {
     text: {
       converter: "String",
       default: "0"
     }
+  },
+  $awake: function () {
+    this.node.setAttribute("nodeID", touchableCount / 255);
+    touchableCount += 10;
   },
   $mount: function () {
     let text = new GomlNode(gr.nodeDeclarations.get("text"));
@@ -95,4 +101,4 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
 });
 
 gr.registerNode("mouse-mesh", ["Mouse"], { geometry: "sphere", color: "white", scale: "1.9" }, "mesh");
-gr.registerNode("touch-target", ["Touchable"], {}, "mouse-mesh"); //ゲームのタイムアタック用ターゲット
+gr.registerNode("touch-target", ["Touchable"], { material: "new(target)" }, "mouse-mesh"); //ゲームのタイムアタック用ターゲット
