@@ -79,6 +79,10 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
     text: {
       converter: "String",
       default: "0"
+    },
+    index: {
+      converter: "Number",
+      default: 0
     }
   },
   $awake: function () {
@@ -87,10 +91,10 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
     touchableCount += 10;
     this.node.on("touch", function () {
       // console.log(`touch!: ${this.getAttribute("text")}`);
-      _this.node.setAttribute("color", "blue");
-      setTimeout(function () {
-        _this.node.setAttribute("color", "white");
-      }, 100);
+      // _this.node.setAttribute("color", "blue");
+      // setTimeout(function () {
+      //   _this.node.setAttribute("color", "white");
+      // }, 100);
     });
   },
   $mount: function () {
@@ -104,7 +108,7 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
     this.node.addChild(text);
   },
   $touch: function () {
-    this.node.emit("touch");
+    this.node.emit("touch", this.node);
   }
 });
 

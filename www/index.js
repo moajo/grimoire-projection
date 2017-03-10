@@ -1,5 +1,17 @@
 /**
  * 仕様：
+ *
+ * 最初の画面は投影キャリブレーション。
+ * pumpのロゴ表示しておく。
+ * 赤い丸を四隅に置いて「u」キーで射影行列を設定する。そして赤いまるが消える。
+ * ゲーム選択画面。(@1)1キーでタイムアタックのゲーム開始。セットアップ（ターゲットの表示まで）
+ * ターゲットをいい感じに配置する。
+ * (@2)ゲームスタートするとカウントダウンしてスタート。全部順番に触ってクリア。タイムが表示される。最高タイムも別に表示されてる。
+ * 全部触れなかったり、クリアした後とかも、rキーで(@2)に戻る。プレイ中はスペースで触れる。シフトスペースで戻れる。
+ * シフトrで(@1)へ戻る。
+ *
+ *
+ *
  * webcamera射影変換->webcamraw
  * フレーム差分2値化丸め->diffBuffer
  * ターゲットシルエット->targetHitarea
@@ -33,10 +45,12 @@ document.addEventListener("keydown", function (e) {
     gameReset_time()
   } else if (e.keyCode === 83) { //s:start
     gameStart_time();
+  } else if (e.keyCode === 73) { //i:init(reset)
+    gameSetup_time();
   }
 })
 
-var _updateMat = function () {
+var updateMat = function () {
 
 };
 gr(function () {
@@ -45,7 +59,7 @@ gr(function () {
   var p3 = gr("#maingoml")("#p3").single();
   var p4 = gr("#maingoml")("#p4").single();
 
-  _updateMat = function () {
+  updateMat = function () {
     var p1p = p1.getAttribute("viewportPos");
     var p2p = p2.getAttribute("viewportPos");
     var p3p = p3.getAttribute("viewportPos");
@@ -74,16 +88,16 @@ gr(function () {
 
 });
 
-function updateMat() {
-  _updateMat();
-}
-
 function toggleWebcam() { //webcamのオンオフ切替
   var current = gr("*")("#bgwebcam").first().enabled;
   gr("*")("#bgwebcam").first().enabled = !current;
 }
 
 function gameReset_time() {
+  gr("*")("time-attack-manager").sendMessage("reset");
+}
+
+function gameSetup_time() {
   gr("*")("time-attack-manager").sendMessage("setup");
 }
 
