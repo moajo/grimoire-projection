@@ -1,0 +1,66 @@
+@Pass{
+@Disable(BLEND)
+@Disable(DEPTH_TEST)
+FS_PREC(mediump,float)
+varying vec2 vTexCoord;
+
+float toGrayScale(vec4 color){
+  return 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
+}
+
+#ifdef VS
+
+
+attribute vec3 position;
+attribute vec2 texCoord;
+
+void main(){
+  vTexCoord = vec2(texCoord.x,-texCoord.y);
+  gl_Position = vec4(position,1.);
+}
+
+#endif
+
+#ifdef FS
+
+uniform sampler2D source0;
+uniform sampler2D source1;
+uniform sampler2D source2;
+uniform sampler2D source3;
+uniform sampler2D source4;
+uniform sampler2D source5;
+uniform sampler2D source6;
+uniform sampler2D source7;
+uniform sampler2D source8;
+uniform sampler2D source9;
+
+  void main(){
+    //最大を取る
+    float scol1 = texture2D(source0,vTexCoord).r;
+    float scol2 = texture2D(source1,vTexCoord).r;
+    float scol3 = texture2D(source2,vTexCoord).r;
+    float scol4 = texture2D(source3,vTexCoord).r;
+    float scol5 = texture2D(source4,vTexCoord).r;
+    float scol6 = texture2D(source5,vTexCoord).r;
+    float scol7 = texture2D(source6,vTexCoord).r;
+    float scol8 = texture2D(source7,vTexCoord).r;
+    float scol9 = texture2D(source8,vTexCoord).r;
+    float scol10 = texture2D(source9,vTexCoord).r;
+
+    float maxval = scol1;
+    maxval = max(maxval,scol2);
+    maxval = max(maxval,scol3);
+    maxval = max(maxval,scol4);
+    maxval = max(maxval,scol5);
+    maxval = max(maxval,scol6);
+    maxval = max(maxval,scol7);
+    maxval = max(maxval,scol8);
+    maxval = max(maxval,scol9);
+    maxval = max(maxval,scol10);
+
+    gl_FragColor = vec4(vec3(maxval),1);
+  }
+
+
+#endif
+}

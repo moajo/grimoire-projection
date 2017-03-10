@@ -23,20 +23,20 @@ void main(){
 
 #ifdef FS
 
-uniform sampler2D source;
-uniform sampler2D source2;
+uniform sampler2D source0;
+uniform sampler2D source1;
 
   void main(){
     //フレーム間差分をかんたんにとる
-    vec4 scol1 = texture2D(source,vTexCoord);
-    vec4 scol2 = texture2D(source2,vec2(vTexCoord.x,vTexCoord.y));
+    vec4 scol1 = texture2D(source0,vTexCoord);
+    vec4 scol2 = texture2D(source1,vec2(vTexCoord.x,vTexCoord.y));
 
     vec4 diff = scol1-vec4(scol2.rgb,0);
 
     float gray = toGrayScale(diff);
 
     // gl_FragColor = scol1-vec4(scol2.rgb,0);
-    gl_FragColor = vec4(vec3(gray),1);
+    gl_FragColor = vec4(vec3(step(0.1,gray)),1);//2値化
   }
 
 

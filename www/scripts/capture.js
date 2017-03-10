@@ -20,6 +20,10 @@ gr.registerComponent("RenderDiff", {
     next: {
       default: null,
       converter: "Node"
+    },
+    arrayName: {
+      default: "diff",
+      converter: "String"
     }
   },
 
@@ -41,34 +45,26 @@ gr.registerComponent("RenderDiff", {
     const bufferCount = this.getAttribute("bufferCount");
     for (var i = 0; i < bufferCount; i++) {
       const buf = new GomlNode(tbd);
-      buf.setAttribute("name", `diff_${i}`);
+      buf.setAttribute("name", `${this.getAttribute("arrayName")}_${i}`);
       this.textureBuffers.push(buf);
       this.node.addChild(buf);
     }
   },
 
   $bufferUpdated: function (args) {
-    // const out = this.getAttribute("out");
-    // if (out !== "default") {
     this.fboArray = [];
     // this._fbo = [];
     const bufferCount = this.getAttribute("bufferCount");
     for (var i = 0; i < bufferCount; i++) {
       this.fboArray[i] = { name: `diff_${i}`, fbo: new Framebuffer(this.companion.get("gl")) };
-      this.fboArray[i].fbo.update(args.buffers[`diff_${i}`]);
+      this.fboArray[i].fbo.update(args.buffers[`${this.getAttribute("arrayName")}_${i}`]);
       // this._fbo[i] = new Framebuffer(this.companion.get("gl"));
       // this._fbo[i].update(args.buffers[`diff_${i}`]);
     }
-    this._fboSize = args.bufferSizes["diff_0"];
-    console.log("updateBuffer!");
-    console.log(args);
+    this._fboSize = args.bufferSizes[`${this.getAttribute("arrayName")}_0`];
+    // console.log("updateBuffer!");
+    // console.log(args);
     this.renderCount = 0;
-
-    // }
-    // const depthBuffer = this.getAttribute("depthBuffer");
-    // if (depthBuffer && this._fbo) {
-    //   this._fbo.update(args.buffers[depthBuffer]);
-    // }
   },
 
   $render: function (args) {
@@ -79,7 +75,6 @@ gr.registerComponent("RenderDiff", {
     this.renderCount++;
     const index = this.renderCount % bufferCount;
     // bound render target
-    // if (this._fbo) {
     const obj = this.fboArray[index];
     obj.fbo.bind();
     this._gl.viewport(0, 0, this._fboSize.width, this._fboSize.height);
@@ -99,29 +94,7 @@ gr.registerComponent("RenderDiff", {
     this._materialContainer.material.draw(renderArgs);
     this._gl.flush();
 
-    // this.fboArray.forEach(obj => {
-    //   obj.fbo.bind();
-    //   this._gl.viewport(0, 0, this._fboSize.width, this._fboSize.height);
-    //   // make rendering argument
-    //   const renderArgs = {
-    //     targetBuffer: this._targetBuffer,
-    //     geometry: this._geom,
-    //     attributeValues: {},
-    //     camera: null,
-    //     transform: null,
-    //     buffers: args.buffers,
-    //     viewport: args.viewport,
-    //     technique: this._technique
-    //   };
-    //   renderArgs.attributeValues = this._materialContainer.materialArgs;
-    //   // do render
-    //   this._materialContainer.material.draw(renderArgs);
-    //   this._gl.flush();
-    //
-    // });
     this.getAttribute("next").sendMessage("updateBufferArray", { count: this.renderCount, array: this.fboArray });
-    // }
-
   }
 });
 
@@ -129,12 +102,13 @@ gr.registerComponent("BufferArrayReciever", { //バッファ受けてシェー�
   $updateBufferArray: function (obj) {
     const list = obj.array;
     const bufferCount = list.length;
-    const index = obj.count % bufferCount;
-    console.log("recieve!!!!!!!:" + index);
-    // console.log(list[0]);
-    this.node.setAttribute("source", `backbuffer(${list[obj.count % bufferCount].name})`);
-    this.node.setAttribute("source2", `backbuffer(${list[(obj.count-1) % bufferCount].name})`);
-    // this.node.setAttribute("source", list[2].name);
+    // console.log(`recieve: ${bufferCount}`)
+    // const index = obj.count % bufferCount;
+    for (var i = 0; i < bufferCount; i++) {
+      const name = list[(obj.count - i + bufferCount) % bufferCount].name;
+      const varName = `source${i}`;
+      this.node.setAttribute(varName, `backbuffer(${name})`);
+    }
   }
 });
 
