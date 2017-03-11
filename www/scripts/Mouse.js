@@ -83,6 +83,10 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
     index: {
       converter: "Number",
       default: 0
+    },
+    defaultColor: {
+      converter: "Color4",
+      default: "white"
     }
   },
   $awake: function () {
@@ -109,6 +113,9 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
   },
   $touch: function () {
     this.node.emit("touch", this.node);
+  },
+  $resetColor: function () {
+    this.node.setAttribute("color", this.getAttribute("defaultColor"));
   }
 });
 

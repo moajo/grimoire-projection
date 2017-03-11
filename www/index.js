@@ -16,11 +16,21 @@
  * フレーム差分2値化丸め->diffBuffer
  * ターゲットシルエット->targetHitarea
  * 当たり判定->targetHitTest
+ *
+ *
+ * タスク
+ * ・ロゴいいやつ準備
+ * ・ターゲットデザイン
+ * ・効果音
+ * ・diffのアルゴリズム検討
+ * ・diffのしきい値検討
+ * ・
  */
 
 const UniformResolverRegistry = gr.lib.fundamental.Material.UniformResolverRegistry;
 const Matrix = gr.lib.math.Matrix;
 const timer = document.getElementById("timeattack-time");
+const recordTime = document.getElementById("record-time");
 
 let projectionMatrix = Matrix.identity();
 UniformResolverRegistry.add("PROJ", (valinfo) => (proxy) => {
@@ -34,10 +44,31 @@ window.URL = window.URL || window.webkitURL;
 //debug key command
 document.addEventListener("keydown", function (e) {
   console.log(e.keyCode);
+
   if (e.keyCode === 80) { //p:テスト用板ポリの表示切替
-    gr("*")("#testquad").first().enabled = !gr("*")("#testquad").first().enabled;
+    const current = gr("*")("#titleView").first().enabled;
+    gr("*")("#titleView").first().enabled = !current;
+    gr("*")("#bgwebcam").first().enabled = current;
+    // console.log(gr("*")("#bgwebcam").first().enabled);
+
+
   } else if (e.keyCode === 32) { //space:ターゲットタッチ
-    throw new Error("notimplement");
+    const targets = gr("*")("time-attack-manager").getAttribute("targetList");
+    const index = gr("*")("time-attack-manager").getAttribute("currentTargetIndex");
+    if (index < 0) {
+      console.log("targetIndex is -1");
+      return;
+    }
+    if (e.shiftKey) { //back
+      if (index > 0) {
+        targets[index - 1].sendMessage("resetColor")
+        gr("*")("time-attack-manager").setAttribute("currentTargetIndex", index - 1);
+      }
+    } else { //touch forced
+      console.log(index);
+      targets[index].sendMessage("touch");
+    }
+
   } else if (e.keyCode === 85) { //u:射影行列更新.射影ガイドポインタdisabled.
     updateMat();
     gr("*")("#projectionGuide").first().enabled = false;
@@ -45,7 +76,7 @@ document.addEventListener("keydown", function (e) {
     gameReset_time()
   } else if (e.keyCode === 83) { //s:start
     gameStart_time();
-  } else if (e.keyCode === 73) { //i:init(reset)
+  } else if (e.keyCode === 73) { //i:init
     gameSetup_time();
   }
 })
@@ -54,6 +85,7 @@ var updateMat = function () {
 
 };
 gr(function () {
+  // gr("*")("#bgwebcam").first().enabled = false;
   var p1 = gr("#maingoml")("#p1").single();
   var p2 = gr("#maingoml")("#p2").single();
   var p3 = gr("#maingoml")("#p3").single();
@@ -98,6 +130,7 @@ function gameReset_time() {
 }
 
 function gameSetup_time() {
+  gr("*")("#logo").first().enabled = false;
   gr("*")("time-attack-manager").sendMessage("setup");
 }
 
@@ -113,6 +146,7 @@ function gameStart_time() {
   const manager = gr("*")("time-attack-manager").first();
   manager.sendMessage("gameStart");
   timer.classList.remove("hidden");
+  recordTime.classList.remove("hidden");
   const timeupdateHandler = function (time) {
     timer.innerText = `${(time/1000).toFixed(2)}`;
   }
@@ -120,6 +154,8 @@ function gameStart_time() {
   manager.on("finish", function (time) {
     manager.removeListener("timeupdate", timeupdateHandler);
     timer.innerText = `${(time/1000).toFixed(2)}`;
+    const record = manager.getAttribute("recordTime");
+    recordTime.innerText = `RECORD: ${(record/1000).toFixed(2)}`
   })
 
 

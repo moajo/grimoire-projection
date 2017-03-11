@@ -31,10 +31,18 @@ body,html{
   justify-content: space-around;
 }
 
-
 #timeattack-time{
+  text-align: center;
+  font-size: 120px;
+  pointer-events:none;
+  color: #ffffff;
+  font-family: CorsivaHebrew;
+}
+
+#record-time{
   text-align: center;
   font-size: 70px;
   pointer-events:none;
-  color: #ffffff
+  color: #ffffff;
+  font-family: CorsivaHebrew;
 }

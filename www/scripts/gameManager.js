@@ -18,16 +18,29 @@ gr.registerComponent("TimeAttackGameManager", {
     currentTime: { //現在のプレイタイム
       converter: "Number",
       default: "0"
+    },
+    targetList: { //タッチ対象リスト
+      converter: "Object",
+      default: null
+    },
+    currentTargetIndex: { //タッチ対象。不在は-1
+      converter: "Number",
+      default: -1
+    },
+    updateID: {
+      converter: "String",
+      default: ""
+    },
+    recordTime: {
+      converter: "Number",
+      default: 99999
     }
   },
   $awake: function () {
     this.__bindAttributes();
     this.targetNodeDec = gr.nodeDeclarations.get("touch-target");
-    this.recordTime = 0;
+    // this.recordTime = 0;
     this.waitingStart = false; //スタート準備状態
-  },
-  $mount: function () {
-
   },
   $setup: function () { //最初に一回呼ぶ。ターゲット生成とかする。
     console.log("setup!");
@@ -57,10 +70,8 @@ gr.registerComponent("TimeAttackGameManager", {
       t.setAttribute("color", "white");
     });
     this.waitingStart = true;
-
-    // this.targets.forEach((t) => {
-    //   t.enabled = true;
-    // })
+    this.setAttribute("targetList", this.targets);
+    clearInterval(this.updateID);
   },
 
   $gameStart: function () {
@@ -80,32 +91,33 @@ gr.registerComponent("TimeAttackGameManager", {
 
     setTimeout(function () {
       _this.startTime = Date.now();
-      const updateID = setInterval(function () {
+      _this.updateID = setInterval(function () {
         _this.node.emit("timeupdate", _this.currnetTime());
       }, 30);
 
-      let currentTouchTarget = 0;
+      _this.currentTargetIndex = 0;
       let touchableFlag = true;
       const touchhandler = function (node) {
         const idx = node.getAttribute("index");
-        if (touchableFlag && currentTouchTarget === idx) { //correct touch!
+        if (touchableFlag && _this.currentTargetIndex === idx) { //correct touch!
 
           touchableFlag = false; //連続タッチ禁止
           setTimeout(() => { touchableFlag = true; }, 500);
 
-          currentTouchTarget++;
           node.setAttribute("color", "green"); //緑にする
 
-          if (currentTouchTarget < targetCount) {
+          if (_this.currentTargetIndex + 1 < targetCount) { //まだ途中
+            _this.currentTargetIndex++;
+            node.setAttribute("currentTarget", _this.targets[_this.currentTargetIndex]);
             SE.touch.play();
-            // _this.targets[count].on("touch", arguments.callee);
             console.log(`time: ${_this.currnetTime()}`)
-            console.log(`next is ${currentTouchTarget+1}`);
+            console.log(`next is ${_this.currentTargetIndex+1}`);
           } else {
+            _this.currentTargetIndex = -1;
             SE.goal.play();
             let clearTime = _this.currnetTime();
             _this.recordTime = Math.min(_this.recordTime, clearTime);
-            clearInterval(updateID);
+            clearInterval(_this.updateID);
             console.log("game finish");
             console.log(`time: ${clearTime}`);
 
@@ -117,41 +129,11 @@ gr.registerComponent("TimeAttackGameManager", {
         t.on("touch", touchhandler);
       })
     }, 2000);
-
-
-
-
-
-    // this.targets[0].on("touch", function () {
-    //   console.log(`target ${count} touched`);
-    //   _this.targets[count].enabled = false;
-    //   _this.targets[count].removeListener("touch", arguments.callee);
-    //   count++;
-    //   if (count < targetCount) {
-    //     SE.touch.play();
-    //     _this.targets[count].on("touch", arguments.callee);
-    //     console.log(`time: ${_this.currnetTime()}`)
-    //     console.log(`next is ${count}`);
-    //   } else {
-    //     SE.goal.play();
-    //     let clearTime = _this.currnetTime();
-    //     _this.recordTime = Math.min(_this.recordTime, clearTime);
-    //     clearInterval(updateID);
-    //     console.log("game finish");
-    //     console.log(`time: ${clearTime}`);
-    //
-    //     _this.node.emit("finish", clearTime);
-    //   }
-    // });
   },
 
   currnetTime: function () { //プレイタイム
     return Date.now() - this.startTime;
-  },
-  getRecordTime: function () {
-    return this.recordTime;
   }
-
 });
 
 // gr.registerNode("game-anager", ["Mouse"]);
