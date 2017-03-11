@@ -134,6 +134,7 @@ gr.registerComponent("RenderTouchTarget", { //ヒットしてるオブジェク�
       this._fbo = new Framebuffer(this.companion.get("gl"));
       this._fbo.update(args.buffers[out]);
       this._fboSize = args.bufferSizes[out];
+      this.pixels = new Uint8Array(this._fboSize.width * this._fboSize.height * 4);
     } else {
       throw new Error("aaaa");
     }
@@ -167,26 +168,22 @@ gr.registerComponent("RenderTouchTarget", { //ヒットしてるオブジェク�
     this._materialContainer.material.draw(renderArgs);
     this._gl.flush();
 
-    //
-    let pixels = new Uint8Array(this._fboSize.width * this._fboSize.height * 4);
-    this._gl.readPixels(0, 0, this._fboSize.width, this._fboSize.height, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, pixels);
+    this._gl.readPixels(0, 0, this._fboSize.width, this._fboSize.height, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, this.pixels);
     const targets = gr("*")(".touchTarget").toArray();
     const map = {};
     targets.forEach(t => {
       const id = t.getAttribute("nodeID") * 255;
       map[Math.round(id)] = { node: t, count: 0 };
     })
-    for (var i = 0; i < pixels.length; i += 4) {
-      const col = pixels[i];
+    for (var i = 0; i < this.pixels.length; i += 4) {
+      const col = this.pixels[i];
       if (col === 0) {
         continue;
       }
       map[col].count++;
     }
-    // console.log(map);
-
-    for (let key in map) {
-      const t = map[key];
+    for (var i = 1; i < targets.length + 1; i++) {
+      const t = map[i];
       if (t.count > 20) {
         t.node.sendMessage("touch");
       }

@@ -73,7 +73,7 @@ gr.registerComponent("Mouse", { //マウスで動かすやつ
   }
 });
 
-let touchableCount = 10;
+let touchableCount = 1;
 gr.registerComponent("Touchable", { //タッチ。文字表示する
   attributes: {
     text: {
@@ -90,16 +90,16 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
     }
   },
   $awake: function () {
-    const _this = this;
+    // const _this = this;
     this.node.setAttribute("nodeID", touchableCount / 255);
-    touchableCount += 10;
-    this.node.on("touch", function () {
-      // console.log(`touch!: ${this.getAttribute("text")}`);
-      // _this.node.setAttribute("color", "blue");
-      // setTimeout(function () {
-      //   _this.node.setAttribute("color", "white");
-      // }, 100);
-    });
+    touchableCount += 1;
+    // this.node.on("touch", function () {
+    //   // console.log(`touch!: ${this.getAttribute("text")}`);
+    //   // _this.node.setAttribute("color", "blue");
+    //   // setTimeout(function () {
+    //   //   _this.node.setAttribute("color", "white");
+    //   // }, 100);
+    // });
   },
   $mount: function () {
     let text = new GomlNode(gr.nodeDeclarations.get("text"));
