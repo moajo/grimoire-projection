@@ -87,6 +87,10 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
     defaultColor: {
       converter: "Color4",
       default: "white"
+    },
+    touchEnabled: {
+      converter: "Boolean",
+      default: true
     }
   },
   $awake: function () {
@@ -112,10 +116,20 @@ gr.registerComponent("Touchable", { //タッチ。文字表示する
     this.node.addChild(text);
   },
   $touch: function () {
-    this.node.emit("touch", this.node);
+    console.log(this.getAttribute("touchEnabled"));
+    if (this.getAttribute("touchEnabled")) {
+      this.node.emit("touch", this.node);
+    } else {
+      console.log("can not touch");
+    }
   },
   $resetColor: function () {
     this.node.setAttribute("color", this.getAttribute("defaultColor"));
+    this.setAttribute("touchEnabled", false);
+    const _this = this;
+    setTimeout(function () {
+      _this.setAttribute("touchEnabled", true);
+    }, 500);
   }
 });
 

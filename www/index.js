@@ -63,6 +63,7 @@ document.addEventListener("keydown", function (e) {
       if (index > 0) {
         targets[index - 1].sendMessage("resetColor")
         gr("*")("time-attack-manager").setAttribute("currentTargetIndex", index - 1);
+        gr("*")("time-attack-manager").setAttribute("lastTouchID", -1);
       }
     } else { //touch forced
       console.log(index);

@@ -38,6 +38,10 @@ gr.registerComponent("TimeAttackGameManager", {
     setupState: {
       converter: "Boolean",
       default: false
+    },
+    lastTouchID: {
+      converter: "Number",
+      default: -1
     }
   },
   $awake: function () {
@@ -106,11 +110,11 @@ gr.registerComponent("TimeAttackGameManager", {
 
       _this.currentTargetIndex = 0;
       let touchableFlag = true;
-      let lastTouchID = -1;
+      _this.lastTouchID = -1;
       const touchhandler = function (node) {
         const idx = node.getAttribute("index");
-        if (touchableFlag && _this.currentTargetIndex === idx && lastTouchID !== idx) { //correct touch!
-          lastTouchID = idx;
+        if (touchableFlag && _this.currentTargetIndex === idx && _this.lastTouchID !== idx) { //correct touch!
+          _this.lastTouchID = idx;
           touchableFlag = false; //連続タッチ禁止
           setTimeout(() => { touchableFlag = true; }, 100);
 
