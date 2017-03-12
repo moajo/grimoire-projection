@@ -78,6 +78,14 @@ document.addEventListener("keydown", function (e) {
     gameStart_time();
   } else if (e.keyCode === 73) { //i:init
     gameSetup_time();
+  } else if (e.keyCode === 67) { //c:clearRecord
+    if (e.shiftKey) {
+      console.log("clear record!");
+      clearRecord();
+      recordTime.innerText = `RECORD: 999.99`
+    }
+  } else if (e.keyCode === 89) { //y:差分表示をdisabled
+    disableDiffRenderTest();
   }
 })
 
@@ -117,7 +125,6 @@ gr(function () {
     // gr("#maingoml")("#r").setAttribute("l3", [mat[2], mat[5], 1]);
 
   }
-
 });
 
 function toggleWebcam() { //webcamのオンオフ切替
@@ -133,9 +140,21 @@ function gameReset_time() {
   gr("*")("time-attack-manager").sendMessage("reset");
 }
 
+function clearRecord() {
+  localStorage.removeItem('record');
+  gr("*")("time-attack-manager").setAttribute("recordTime", 999990);
+}
+
 function gameSetup_time() {
   // gr("*")("#logo").first().enabled = false;
   gr("*")("time-attack-manager").sendMessage("setup");
+  const recordCache = localStorage.getItem("record") || 999990;
+  gr("*")("time-attack-manager").setAttribute("recordTime", recordCache);
+  recordTime.innerText = `RECORD: ${(recordCache/1000).toFixed(2)}`
+}
+
+function disableDiffRenderTest() {
+  gr("*")("#testquad").setAttribute("material", "new(black)");
 }
 
 function touchAll() {
@@ -155,11 +174,12 @@ function gameStart_time() {
     timer.innerText = `${(time/1000).toFixed(2)}`;
   }
   manager.on("timeupdate", timeupdateHandler);
-  manager.on("finish", function (time) {
+  manager.on("finish", function (time) { //時間更新止めて、記録時間表示更新
     manager.removeListener("timeupdate", timeupdateHandler);
     timer.innerText = `${(time/1000).toFixed(2)}`;
     const record = manager.getAttribute("recordTime");
     recordTime.innerText = `RECORD: ${(record/1000).toFixed(2)}`
+    localStorage.setItem("record", record);
   })
 
 

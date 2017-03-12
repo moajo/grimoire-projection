@@ -33,7 +33,11 @@ gr.registerComponent("TimeAttackGameManager", {
     },
     recordTime: {
       converter: "Number",
-      default: 99999
+      default: 999990
+    },
+    setupState: {
+      converter: "Boolean",
+      default: false
     }
   },
   $awake: function () {
@@ -43,7 +47,12 @@ gr.registerComponent("TimeAttackGameManager", {
     this.waitingStart = false; //スタート準備状態
   },
   $setup: function () { //最初に一回呼ぶ。ターゲット生成とかする。
+    if (this.getAttribute("setupState")) {
+      console.log("already done setup*****");
+      return;
+    }
     console.log("setup!");
+    this.setAttribute("setupState", true);
     const targetCount = this.targetCount;
 
     this.targets = []; //position list for touch targets.
@@ -58,10 +67,10 @@ gr.registerComponent("TimeAttackGameManager", {
     }
 
     //set time indicator
-    let timeIndicator = new GomlNode(gr.nodeDeclarations.get("text"));
-    timeIndicator.setAttribute("text", "0,0");
-    timeIndicator.setAttribute("id", "timeIndicator");
-    this.node.addChild(timeIndicator);
+    // let timeIndicator = new GomlNode(gr.nodeDeclarations.get("text"));
+    // timeIndicator.setAttribute("text", "0,0");
+    // timeIndicator.setAttribute("id", "timeIndicator");
+    // this.node.addChild(timeIndicator);
     this.node.sendMessage("reset");
   },
   $reset: function () { //スタートキーでスタートできる状態に戻す
@@ -97,14 +106,16 @@ gr.registerComponent("TimeAttackGameManager", {
 
       _this.currentTargetIndex = 0;
       let touchableFlag = true;
+      let lastTouchID = -1;
       const touchhandler = function (node) {
         const idx = node.getAttribute("index");
-        if (touchableFlag && _this.currentTargetIndex === idx) { //correct touch!
-
+        if (touchableFlag && _this.currentTargetIndex === idx && lastTouchID !== idx) { //correct touch!
+          lastTouchID = idx;
           touchableFlag = false; //連続タッチ禁止
-          setTimeout(() => { touchableFlag = true; }, 500);
+          setTimeout(() => { touchableFlag = true; }, 100);
 
-          node.setAttribute("color", "green"); //緑にする
+          // console.log("TOUSH!!!!!!")
+          node.setAttribute("color", "blue");
 
           if (_this.currentTargetIndex + 1 < targetCount) { //まだ途中
             _this.currentTargetIndex++;
