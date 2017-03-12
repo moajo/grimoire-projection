@@ -76,7 +76,7 @@ gr.registerComponent("TimeAttackGameManager", {
   $reset: function () { //スタートキーでスタートできる状態に戻す
     console.log("reset!");
     this.targets.forEach(t => {
-      t.setAttribute("color", "white");
+      t.sendMessage("resetColor");
     });
     this.waitingStart = true;
     this.setAttribute("targetList", this.targets);

@@ -73,11 +73,13 @@ document.addEventListener("keydown", function (e) {
     updateMat();
     gr("*")("#projectionGuide").first().enabled = false;
   } else if (e.keyCode === 82) { //r:reset
-    gameReset_time()
+    gameReset_time();
+    timer.innerText = `0.00`;
   } else if (e.keyCode === 83) { //s:start
     gameStart_time();
   } else if (e.keyCode === 73) { //i:init
     gameSetup_time();
+    document.getElementById("title").classList.add("hidden");
   } else if (e.keyCode === 67) { //c:clearRecord
     if (e.shiftKey) {
       console.log("clear record!");

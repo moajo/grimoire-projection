@@ -25,7 +25,7 @@
     <!-- 数フレーム前の結果を何枚か保持してる。nextにメッセージでバッファ列を送る -->
     <render-buffer-array source="backbuffer(webcamraw)" next="#renderdiff" material="new(img)" bufferCount="5">
       <!-- バッファ列を投げられて差分計算 -->
-      <render-diff id="renderdiff" material="new(diff)" source="backbuffer(webcamraw)" out="diffBuffer" threshold="0.01"/>
+      <render-diff id="renderdiff" material="new(diff)" source="backbuffer(webcamraw)" out="diffBuffer" threshold="0.03"/>
     </render-buffer-array>
 
     <!-- あたり判定 -->

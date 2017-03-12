@@ -46,3 +46,9 @@ body,html{
   color: #ffffff;
   font-family: CorsivaHebrew;
 }
+#title{
+  text-align: center;
+  font-size: 160px;
+  pointer-events:none;
+  color: #ffffff;
+}
