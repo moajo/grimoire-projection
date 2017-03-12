@@ -5,8 +5,8 @@ FS_PREC(mediump,float)
 varying vec2 vTexCoord;
 
 float toGrayScale(vec4 color){
-  // return 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
-  return max(color.r,max(color.g,color.b));
+  return 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
+  // return max(color.r,max(color.g,color.b));
 }
 
 #ifdef VS

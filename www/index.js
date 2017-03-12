@@ -125,12 +125,16 @@ function toggleWebcam() { //webcamのオンオフ切替
   gr("*")("#bgwebcam").first().enabled = !current;
 }
 
+function setThreshold(threshold) { //誤差しきい値設定
+  gr("*")("#renderdiff").setAttribute("threshold", threshold);
+}
+
 function gameReset_time() {
   gr("*")("time-attack-manager").sendMessage("reset");
 }
 
 function gameSetup_time() {
-  gr("*")("#logo").first().enabled = false;
+  // gr("*")("#logo").first().enabled = false;
   gr("*")("time-attack-manager").sendMessage("setup");
 }
 
